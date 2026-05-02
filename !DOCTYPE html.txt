@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutor Uko — Time Master Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0a1931; --gold:#f5a623; --teal:#00bcd4;
+  --green:#43a047; --red:#e53935; --purple:#7c3aed;
+  --bg1:#e8f4fd; --bg2:#fff8e1; --bg3:#e8f5e9;
+  --white:#ffffff; --card:#ffffff;
+  --shadow:0 10px 40px rgba(10,25,49,0.13);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 50%,var(--bg3) 100%);min-height:100vh;overflow-x:hidden;}
+
+/* ── TUTOR UKO LOGO WATERMARK (sidebar) ── */
+.logo-sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:110px;
+  background:var(--navy);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  z-index:5;
+  box-shadow:4px 0 24px rgba(10,25,49,0.18);
+}
+.logo-sidebar svg{width:68px;height:68px;}
+.logo-sidebar .brand-text{
+  writing-mode:vertical-rl;text-orientation:mixed;
+  transform:rotate(180deg);
+  font-family:'Baloo 2',cursive;font-weight:800;font-size:1.1rem;
+  color:var(--gold);letter-spacing:3px;text-transform:uppercase;
+}
+.logo-sidebar .tagline{
+  writing-mode:vertical-rl;text-orientation:mixed;
+  transform:rotate(180deg);
+  font-size:0.62rem;color:rgba(255,255,255,0.55);
+  letter-spacing:2px;text-transform:uppercase;margin-top:4px;
+}
+.logo-sidebar .divider{width:40px;height:2px;background:var(--gold);opacity:0.4;border-radius:2px;}
+
+/* ── WATERMARK behind quiz ── */
+.watermark{
+  position:fixed;right:20px;bottom:20px;
+  opacity:0.06;pointer-events:none;z-index:1;
+  font-family:'Baloo 2',cursive;font-size:7rem;font-weight:800;
+  color:var(--navy);line-height:1;text-align:right;
+}
+
+/* ── MAIN LAYOUT ── */
+.page-wrap{margin-left:110px;padding:30px 30px 60px;max-width:820px;position:relative;z-index:10;}
+
+/* ── HEADER ── */
+header{text-align:center;padding-bottom:10px;}
+.header-badge{
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--navy);color:var(--gold);
+  font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;
+  padding:12px 36px;border-radius:60px;
+  box-shadow:0 6px 0 rgba(10,25,49,0.5),var(--shadow);
+  animation:popIn .7s cubic-bezier(.34,1.56,.64,1) both;
+}
+.header-badge .ico{font-size:2rem;animation:tickTock 1s ease-in-out infinite alternate;display:inline-block;}
+.subtitle{margin-top:10px;font-size:.95rem;color:var(--navy);font-weight:700;opacity:.7;}
+
+/* progress */
+.prog-wrap{max-width:580px;margin:18px auto 4px;background:rgba(255,255,255,.6);border-radius:20px;height:16px;overflow:hidden;box-shadow:inset 0 2px 6px rgba(0,0,0,.1);}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--purple));border-radius:20px;transition:width .5s cubic-bezier(.34,1.56,.64,1);}
+.prog-label{text-align:center;font-size:.82rem;color:var(--navy);font-weight:800;margin-top:4px;opacity:.7;}
+
+/* section badge */
+.section-badge{
+  display:inline-block;margin:14px auto 0;
+  background:var(--teal);color:#fff;
+  font-size:.78rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+  padding:4px 16px;border-radius:20px;
+}
+
+/* ── CARD ── */
+main{max-width:720px;margin:20px auto 0;}
+.q-card{
+  background:var(--card);border-radius:26px;
+  box-shadow:var(--shadow),0 2px 0 #dce0ff;
+  padding:32px 36px 36px;
+  animation:cardIn .5s cubic-bezier(.34,1.56,.64,1) both;
+  position:relative;overflow:hidden;
+}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--teal),var(--purple),var(--gold));border-radius:26px 26px 0 0;}
+.q-num{font-family:'Baloo 2',cursive;font-size:.82rem;font-weight:800;color:var(--teal);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;}
+.q-text{font-family:'Baloo 2',cursive;font-size:1.45rem;font-weight:700;color:var(--navy);line-height:1.4;margin-bottom:22px;}
+.type-tag{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:3px 12px;border-radius:20px;margin-bottom:14px;}
+.tag-12-24{background:#e0f7fa;color:#00838f;}
+.tag-analogue{background:#f3e5f5;color:#6a1b9a;}
+.tag-digital{background:#fff3e0;color:#e65100;}
+
+/* clock */
+.clock-wrap{display:flex;justify-content:center;margin:0 0 22px;}
+.analog-clock{width:140px;height:140px;border-radius:50%;background:#fffde7;border:6px solid var(--navy);position:relative;box-shadow:0 4px 20px rgba(10,25,49,.18);}
+.c-center{position:absolute;width:10px;height:10px;background:var(--navy);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;}
+.h-hand,.m-hand{position:absolute;bottom:50%;left:50%;transform-origin:bottom center;border-radius:4px;}
+.h-hand{width:6px;height:38px;margin-left:-3px;background:var(--navy);}
+.m-hand{width:3px;height:50px;margin-left:-1.5px;background:var(--red);}
+.s-tick{position:absolute;width:2px;height:8px;background:rgba(10,25,49,.2);bottom:50%;left:50%;transform-origin:bottom center;margin-left:-1px;}
+.c-num{position:absolute;font-family:'Baloo 2',cursive;font-size:.7rem;font-weight:800;color:var(--navy);transform:translate(-50%,-50%);}
+
+/* options */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.opt-btn{
+  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;
+  padding:15px 10px;border-radius:14px;
+  border:3px solid #e0e0e0;background:#f8f9ff;color:var(--navy);
+  cursor:pointer;transition:all .18s;text-align:center;
+}
+.opt-btn:hover:not(:disabled){border-color:var(--teal);background:#e0f7fa;transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,188,212,.2);}
+.opt-btn.correct{background:#e8f5e9;border-color:var(--green);color:#1b5e20;animation:boing .4s ease;}
+.opt-btn.wrong{background:#fce4ec;border-color:var(--red);color:#b71c1c;animation:shake .4s ease;}
+
+/* feedback */
+.feedback{margin-top:16px;padding:14px 18px;border-radius:12px;font-size:.95rem;font-weight:700;display:none;align-items:center;gap:10px;animation:fadeUp .3s ease both;}
+.feedback.show{display:flex;}
+.fb-correct{background:#e8f5e9;color:#2e7d32;}
+.fb-wrong{background:#fce4ec;color:#c62828;}
+.fb-icon{font-size:1.5rem;}
+
+/* next */
+.next-btn{
+  margin-top:20px;width:100%;
+  font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:800;
+  padding:15px;border-radius:14px;border:none;
+  background:var(--navy);color:var(--gold);cursor:pointer;
+  box-shadow:0 5px 0 rgba(10,25,49,.6);transition:all .15s;display:none;letter-spacing:.5px;
+}
+.next-btn:hover{transform:translateY(-2px);box-shadow:0 7px 0 rgba(10,25,49,.6);}
+.next-btn:active{transform:translateY(2px);box-shadow:0 3px 0 rgba(10,25,49,.6);}
+.next-btn.show{display:block;animation:fadeUp .3s .1s ease both;}
+
+/* ── SCORE SCREEN ── */
+.score-screen{background:var(--card);border-radius:26px;box-shadow:var(--shadow);padding:50px 40px;text-align:center;display:none;animation:cardIn .6s cubic-bezier(.34,1.56,.64,1) both;}
+.score-screen.show{display:block;}
+.trophy{font-size:5rem;display:block;animation:bounce 1s ease infinite alternate;margin-bottom:10px;}
+.score-title{font-family:'Baloo 2',cursive;font-size:2.2rem;font-weight:800;color:var(--navy);}
+.score-num{font-family:'Baloo 2',cursive;font-size:4.5rem;font-weight:800;color:var(--gold);line-height:1;}
+.score-total{font-size:1.3rem;color:#999;font-weight:700;}
+.score-msg{margin:14px 0 28px;font-size:1rem;color:#555;font-weight:600;}
+.score-breakdown{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 auto 28px;max-width:420px;
+  text-align:left;
+}
+.breakdown-box{background:#f8f9ff;border-radius:12px;padding:12px 16px;border-left:4px solid var(--teal);}
+.breakdown-box h4{font-family:'Baloo 2',cursive;font-size:.85rem;color:var(--navy);font-weight:800;margin-bottom:4px;}
+.breakdown-box p{font-size:1.2rem;font-weight:800;color:var(--purple);}
+.restart-btn{
+  font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;
+  padding:15px 48px;border-radius:16px;border:none;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  color:#fff;cursor:pointer;box-shadow:0 5px 0 #4a148c;transition:all .15s;
+}
+.restart-btn:hover{transform:translateY(-2px);}
+
+/* confetti/stars */
+.stars-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;overflow:hidden;}
+.star{position:absolute;animation:starFall 1.5s ease both;opacity:0;}
+
+/* ── ANIMATIONS ── */
+@keyframes popIn{from{opacity:0;transform:scale(.5) translateY(30px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes tickTock{from{transform:rotate(-12deg);}to{transform:rotate(12deg);}}
+@keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes boing{0%,100%{transform:scale(1);}40%{transform:scale(1.1);}70%{transform:scale(.95);}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+@keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-16px);}}
+@keyframes starFall{0%{opacity:1;transform:translateY(-20px) scale(.5) rotate(0deg);}70%{opacity:1;}100%{opacity:0;transform:translateY(80px) scale(1.3) rotate(360deg);}}
+
+@media(max-width:600px){
+  .logo-sidebar{width:60px;}
+  .logo-sidebar .brand-text,.logo-sidebar .tagline{font-size:.7rem;}
+  .logo-sidebar svg{width:42px;height:42px;}
+  .page-wrap{margin-left:60px;padding:20px 14px 50px;}
+  .header-badge{font-size:1.3rem;padding:10px 20px;}
+  .q-text{font-size:1.1rem;}
+  .opts{grid-template-columns:1fr;}
+  .score-breakdown{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── TUTOR UKO SIDEBAR LOGO ── -->
+<div class="logo-sidebar">
+  <!-- SVG Logo: book + clock + graduation cap motif -->
+  <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Book base -->
+    <rect x="10" y="36" width="28" height="34" rx="4" fill="#f5a623"/>
+    <rect x="12" y="38" width="24" height="30" rx="3" fill="#fff8e1"/>
+    <!-- Book spine -->
+    <rect x="10" y="36" width="5" height="34" rx="2" fill="#e69516"/>
+    <!-- Book pages lines -->
+    <rect x="16" y="43" width="16" height="2" rx="1" fill="#e69516" opacity=".5"/>
+    <rect x="16" y="48" width="12" height="2" rx="1" fill="#e69516" opacity=".5"/>
+    <rect x="16" y="53" width="14" height="2" rx="1" fill="#e69516" opacity=".5"/>
+    <!-- Clock circle -->
+    <circle cx="56" cy="30" r="20" fill="#0a1931" stroke="#f5a623" stroke-width="3"/>
+    <circle cx="56" cy="30" r="16" fill="#1a2f52"/>
+    <!-- Clock ticks -->
+    <rect x="55.5" y="16" width="1" height="4" rx=".5" fill="#f5a623"/>
+    <rect x="55.5" y="40" width="1" height="4" rx=".5" fill="#f5a623"/>
+    <rect x="42" y="29.5" width="4" height="1" rx=".5" fill="#f5a623"/>
+    <rect x="66" y="29.5" width="4" height="1" rx=".5" fill="#f5a623"/>
+    <!-- Hour hand -->
+    <line x1="56" y1="30" x2="56" y2="20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    <!-- Minute hand -->
+    <line x1="56" y1="30" x2="65" y2="30" stroke="#f5a623" stroke-width="2" stroke-linecap="round"/>
+    <!-- Center dot -->
+    <circle cx="56" cy="30" r="2" fill="#f5a623"/>
+    <!-- Graduation cap -->
+    <polygon points="40,10 56,5 72,10 56,15" fill="#f5a623"/>
+    <rect x="54" y="15" width="4" height="10" rx="1" fill="#f5a623"/>
+    <circle cx="56" cy="26" r="3" fill="#f5a623"/>
+    <!-- Tassel -->
+    <line x1="72" y1="10" x2="72" y2="18" stroke="#f5a623" stroke-width="2"/>
+    <circle cx="72" cy="19" r="2" fill="#f5a623"/>
+  </svg>
+  <div class="brand-text">Tutor Uko</div>
+  <div class="divider"></div>
+  <div class="tagline">Time Master</div>
+</div>
+
+<!-- watermark -->
+<div class="watermark">TUTOR<br>UKO</div>
+
+<!-- stars overlay -->
+<div class="stars-container" id="stars"></div>
+
+<div class="page-wrap">
+  <header>
+    <div class="header-badge"><span class="ico">⏰</span> Time Master Quiz</div>
+    <p class="subtitle">40 Questions · 12/24-Hour Conversion · Analogue &amp; Digital Reading</p>
+    <div class="prog-wrap"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <p class="prog-label" id="progLabel">Question 1 of 40</p>
+    <div class="section-badge" id="sectionBadge">Section 1: 12 ↔️ 24-Hour Format</div>
+  </header>
+
+  <main>
+    <div class="q-card" id="qCard">
+      <div class="q-num" id="qNum">Question 1 of 40</div>
+      <span class="type-tag" id="typeTag"></span>
+      <div class="q-text" id="qText"></div>
+      <div class="clock-wrap" id="clockWrap" style="display:none">
+        <div class="analog-clock" id="aClock">
+          <div class="c-center"></div>
+          <div class="h-hand" id="hHand"></div>
+          <div class="m-hand" id="mHand"></div>
+        </div>
+      </div>
+      <div class="opts" id="opts"></div>      <div class="feedback" id="feedback">
+        <span class="fb-icon" id="fbIcon"></span>
+        <span id="fbText"></span>
+      </div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">Next Question →</button>
+    </div>
+
+    <div class="score-screen" id="scoreScreen">
+      <span class="trophy" id="trophyEmoji">🏆</span>
+      <div class="score-title" id="scoreTitle">Excellent!</div>
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-total">out of 40</div>
+      <p class="score-msg" id="scoreMsg"></p>
+      <div class="score-breakdown">
+        <div class="breakdown-box"><h4>12↔️24 Hour</h4><p id="bdConvert">—</p></div>
+        <div class="breakdown-box"><h4>Analogue Read</h4><p id="bdAnalogue">—</p></div>
+        <div class="breakdown-box"><h4>Digital Read</h4><p id="bdDigital">—</p></div>
+        <div class="breakdown-box"><h4>Accuracy</h4><p id="bdPct">—</p></div>
+      </div>
+      <button class="restart-btn" onclick="restart()">🔄 Play Again!</button>
+    </div>
+  </main>
+</div>
+
+<script>
+// ── QUESTION BANK ──────────────────────────────────────────────
+const Qs = [
+  // ── SECTION A: 12→24 hour (20 q) ──
+  {sec:"A",type:"12-24",tag:"12 → 24-Hour",tagClass:"tag-12-24",
+   text:"Convert 3:00 AM to 24-hour format.",
+   opts:["03:00","15:00","13:00","03:30"],cor:0,
+   fb:"AM times before noon keep the same digits: 3:00 AM = 03:00."},
+
+  {sec:"A",type:"12-24",tag:"12 → 24-Hour",tagClass:"tag-12-24",
+   text:"Convert 3:00 PM to 24-hour format.",
+   opts:["03:00","15:00","13:00","16:00"],cor:1,
+   fb:"PM times: add 12. 3 + 12 = 15, so 3:00 PM = 15:00."},
+
+  {sec:"A",type:"12-24",tag:"12 → 24-Hour",tagClass:"tag-12-24",
+   text:"What is 12:00 midnight in 24-hour format?",
+   opts:["12:00","24:00","00:00","01:00"],cor:2,
+   fb:"Midnight is the START of a new day: 00:00 in 24-hour format."},
+
+  {sec:"A",type:"12-24",tag:"12 → 24-Hour",tagClass:"tag-12-24",
+   text:"What is 12:00 noon in 24-hour format?",
+   opts:["00:00","24:00","13:00","12:00"],cor:3,
+   fb:"Noon stays as 12:00 in 24-hour format — no change needed!"},
+
+  {sec:"A",type:"12-24",tag:"12 → 24-Hour",tagClass:"tag-12-24",
+   text:"Convert 7:45 PM to 24-hour format.",
+   opts:["07:45","17:45","19:45","20:45"],cor:2,
+   fb:"7 + 12 = 19, so 7:45 PM = 19:45."},
+
+  {sec:"A",type:"12-24",tag:"12 → 24-Hour",tagClass:"tag-12-24",
+   text:"Convert 11:30 PM to 24-hour format.",
+   opts:["11:30","23:30","22:30","00:30"],cor:1,
+   fb:"11 + 12 = 23, so 11:30 PM = 23:30."},
+
+  {sec:"A",type:"12-24",tag:"12 → 24-Hour",tagClass:"tag-12-24",
+   text:"Convert 6:15 AM to 24-hour format.",
+   opts:["18:15","16:15","06:15","06:05"],cor:2,
+   fb:"AM times just use the same hour with a leading zero: 06:15."},
+
+  {sec:"A",type:"12-24",tag:"12 → 24-Hour",tagClass:"tag-12-24",
+   text:"Convert 12:01 AM to 24-hour format.",
+   opts:["12:01","00:01","24:01","01:01"],cor:1,
+   fb:"12:01 AM is just after midnight: 00:01 in 24-hour format."},
+
+  {sec:"A",type:"12-24",tag:"12 → 24-Hour",tagClass:"tag-12-24",
+   text:"What is 8:20 PM in 24-hour format?",
+   opts:["08:20","18:20","20:20","21:20"],cor:2,
+   fb:"8 + 12 = 20, so 8:20 PM = 20:20."},
+
+  {sec:"A",type:"12-24",tag:"12 → 24-Hour",tagClass:"tag-12-24",
+   text:"What is 10:55 PM in 24-hour format?",
+   opts:["10:55","22:55","23:55","20:55"],cor:1,
+   fb:"10 + 12 = 22, so 10:55 PM = 22:55."},
+
+  // ── 24→12 hour ──
+  {sec:"A",type:"12-24",tag:"24 → 12-Hour",tagClass:"tag-12-24",
+   text:"Convert 14:00 to 12-hour format.",
+   opts:["2:00 AM","4:00 PM","2:00 PM","12:00 PM"],cor:2,
+   fb:"14 − 12 = 2, and it's PM (past noon): 2:00 PM."},
+
+  {sec:"A",type:"12-24",tag:"24 → 12-Hour",tagClass:"tag-12-24",
+   text:"Convert 09:30 to 12-hour format.",
+   opts:["9:30 PM","21:30","9:30 AM","10:30 AM"],cor:2,
+   fb:"09:30 is before noon, so it's simply 9:30 AM."},
+
+  {sec:"A",type:"12-24",tag:"24 → 12-Hour",tagClass:"tag-12-24",
+   text:"Convert 00:00 to 12-hour format.",
+   opts:["12:00 midnight","12:00 noon","0:00 AM","24:00"],cor:0,
+   fb:"00:00 is midnight in 24-hour format, written as 12:00 AM (midnight)."},
+
+  {sec:"A",type:"12-24",tag:"24 → 12-Hour",tagClass:"tag-12-24",
+   text:"Convert 23:45 to 12-hour format.",
+   opts:["11:45 AM","11:45 PM","12:45 AM","1:45 PM"],cor:1,
+   fb:"23 − 12 = 11, and it's PM: 11:45 PM."},
+
+  {sec:"A",type:"12-24",tag:"24 → 12-Hour",tagClass:"tag-12-24",
+   text:"Convert 17:20 to 12-hour format.",
+   opts:["7:20 AM","7:20 PM","5:20 AM","5:20 PM"],cor:3,
+   fb:"17 − 12 = 5, and it's PM: 5:20 PM."},
+
+  {sec:"A",type:"12-24",tag:"24 → 12-Hour",tagClass:"tag-12-24",
+   text:"Convert 12:01 to 12-hour format.",
+   opts:["12:01 AM","12:01 midnight","12:01 PM","0:01 PM"],cor:2,
+   fb:"12:01 is just after noon: 12:01 PM."},
+
+  {sec:"A",type:"12-24",tag:"24 → 12-Hour",tagClass:"tag-12-24",
+   text:"Convert 20:35 to 12-hour format.",
+   opts:["8:35 AM","8:35 PM","10:35 PM","2:35 PM"],cor:1,
+   fb:"20 − 12 = 8, and it's PM: 8:35 PM."},
+
+  {sec:"A",type:"12-24",tag:"24 → 12-Hour",tagClass:"tag-12-24",
+   text:"Convert 01:05 to 12-hour format.",
+   opts:["11:05 PM","1:05 PM","1:05 AM","13:05 AM"],cor:2,
+   fb:"01:05 is in the early hours of the morning: 1:05 AM."},
+
+  {sec:"A",type:"12-24",tag:"24 → 12-Hour",tagClass:"tag-12-24",
+   text:"A train departs at 15:48. What is this in 12-hour format?",
+   opts:["3:48 AM","5:48 PM","3:48 PM","15:48 AM"],cor:2,
+   fb:"15 − 12 = 3, so it departs at 3:48 PM."},
+
+  {sec:"A",type:"12-24",tag:"24 → 12-Hour",tagClass:"tag-12-24",
+   text:"A shop opens at 08:30 and closes at 21:00. What is closing time in 12-hour format?",
+   opts:["8:00 PM","9:00 PM","11:00 PM","9:30 PM"],cor:1,
+   fb:"21 − 12 = 9, so it closes at 9:00 PM."},
+
+  // ── SECTION B: Analogue reading (12 questions) ──
+  {sec:"B",type:"analogue",tag:"Analogue Clock",tagClass:"tag-analogue",
+   text:"What time does this clock show?",
+   clock:{h:9,m:0},
+   opts:["3:00","9:00","6:00","12:45"],cor:1,
+   fb:"Hour hand → 9, minute hand → 12 = 9:00 o'clock."},
+
+  {sec:"B",type:"analogue",tag:"Analogue Clock",tagClass:"tag-analogue",
+   text:"What time does this clock show?",
+   clock:{h:3,m:30},
+   opts:["Half past 2","Quarter past 3","Half past 3","3:00"],cor:2,
+   fb:"Minute hand → 6 means 30 minutes = half past. Hour hand is between 3 and 4: half past 3."},
+
+  {sec:"B",type:"analogue",tag:"Analogue Clock",tagClass:"tag-analogue",
+   text:"What time does this clock show?",
+   clock:{h:7,m:15},
+   opts:["Quarter to 7","Quarter past 7","7:45","Half past 7"],cor:1,
+   fb:"Minute hand → 3 = 15 min = quarter past. Hour hand past 7: quarter past 7."},
+
+  {sec:"B",type:"analogue",tag:"Analogue Clock",tagClass:"tag-analogue",
+   text:"What time does this clock show?",
+   clock:{h:4,m:45},
+   opts:["Quarter past 4","4:45 / quarter to 5","Half past 4","Quarter to 4"],cor:1,
+   fb:"Minute hand → 9 = 45 min = quarter to 5. The hour hand is nearly at 5."},
+
+  {sec:"B",type:"analogue",tag:"Analogue Clock",tagClass:"tag-analogue",
+
+
